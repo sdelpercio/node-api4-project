@@ -3,11 +3,11 @@ const userDb = require('./userDb');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', validateUser, (req, res) => {
 	// do your magic!
 });
 
-router.post('/:id/posts', validateUserId, (req, res) => {
+router.post('/:id/posts', validateUserId, validateUser, (req, res) => {
 	// do your magic!
 });
 
@@ -25,7 +25,7 @@ router.delete('/:id', validateUserId, (req, res) => {
 	// do your magic!
 });
 
-router.put('/:id', validateUserId, (req, res) => {
+router.put('/:id', validateUserId, validateUser, (req, res) => {
 	// do your magic!
 });
 
@@ -46,18 +46,25 @@ function validateUserId(req, res, next) {
 				}
 			})
 			.catch(error => {
-				res
-					.status(500)
-					.json({
-						error: 'There was an issue with retrieving the user ID.',
-						error
-					});
+				res.status(500).json({
+					error: 'There was an issue with retrieving the user ID.',
+					error
+				});
 			});
 	}
 }
 
 function validateUser(req, res, next) {
-	// do your magic!
+	const body = req.body;
+	const name = req.body.name;
+
+	if (!body) {
+		res.status(400).json({ error: 'Missing user data.' });
+	} else if (!name) {
+		res.status(400).json({ error: 'Missing required name field.' });
+	} else {
+		next();
+	}
 }
 
 function validatePost(req, res, next) {
