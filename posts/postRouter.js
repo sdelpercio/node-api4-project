@@ -29,15 +29,45 @@ router.get('/:id', validatePostId, (req, res) => {
 				.status(500)
 				.json({ error: 'There was an error retrieving the post', err });
 		});
-});
+}); // done
 
 router.delete('/:id', validatePostId, (req, res) => {
-	// do your magic!
-});
+	const { id } = req.params;
+	postDb
+		.remove(id)
+		.then(count => {
+			if (count > 0) {
+				res.status(200).json({ message: 'The post has been deleted' });
+			} else {
+				res.status(404).json({ message: 'The post could not be found' });
+			}
+		})
+		.catch(error => {
+			res
+				.status(500)
+				.json({ error: 'There was an issue deleting the post.', error });
+		});
+}); // done
 
 router.put('/:id', validatePostId, (req, res) => {
-	// do your magic!
-});
+	const postInfo = req.body;
+	const { id } = req.params;
+
+	postDb
+		.update(id, postInfo)
+		.then(count => {
+			if (count > 0) {
+				res.status(200).json({ message: 'The post has been updated' });
+			} else {
+				res.status(404).json({ message: 'The post could not be found' });
+			}
+		})
+		.catch(error => {
+			res
+				.status(500)
+				.json({ error: 'There was an issue updating the post.', error });
+		});
+}); // done
 
 // custom middleware
 
