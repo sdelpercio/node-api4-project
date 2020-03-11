@@ -8,8 +8,8 @@ server.use(logger);
 server.use(express.json());
 
 // handle routing
-server.use('/users', userRouter);
-server.use('/posts', postRouter);
+server.use('/api/users', userRouter);
+server.use('/api/posts', postRouter);
 
 // base url
 server.get('/', (req, res) => {

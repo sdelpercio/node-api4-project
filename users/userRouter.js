@@ -11,10 +11,29 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 	// do your magic!
 });
 
-router.get('/', (req, res) => {});
+router.get('/', (req, res) => {
+	userDb
+		.get()
+		.then(users => {
+			res.status(200).json(users);
+		})
+		.catch(error => {
+			res.status(500).json({ error: 'Could not retrieve users data.', error });
+		});
+});
 
 router.get('/:id', validateUserId, (req, res) => {
-	// do your magic!
+	userDb
+		.getById(req.params.id)
+		.then(user => {
+			res.status(200).json(user);
+		})
+		.catch(error => {
+			res.status(500).json({
+				error: 'There was an issue with retrieving the user ID.',
+				error
+			});
+		});
 });
 
 router.get('/:id/posts', validateUserId, (req, res) => {
@@ -31,7 +50,7 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
 
 //custom middleware
 function validateUserId(req, res, next) {
-	const { id } = req.params;
+	const id = req.params.id;
 
 	if (!id) {
 		res.status(400).json({ error: 'Must include user ID in URL.' });
@@ -39,8 +58,8 @@ function validateUserId(req, res, next) {
 		userDb
 			.getById(id)
 			.then(user => {
-				if (user.length === 0) {
-					res.status(400).json({ error: 'User does not exist' });
+				if (user === undefined) {
+					res.status(400).json({ error: 'User does not exist.' });
 				} else {
 					next();
 				}
