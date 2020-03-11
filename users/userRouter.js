@@ -4,8 +4,17 @@ const userDb = require('./userDb');
 const router = express.Router();
 
 router.post('/', validateUser, (req, res) => {
-	// do your magic!
-});
+	const userInfo = req.body;
+
+	userDb
+		.insert(userInfo)
+		.then(newUser => {
+			res.status(201).json(newUser);
+		})
+		.catch(error => {
+			res.status(500).json({ error: 'New user could not be created.', error });
+		});
+}); // done
 
 router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 	// do your magic!
@@ -20,7 +29,7 @@ router.get('/', (req, res) => {
 		.catch(error => {
 			res.status(500).json({ error: 'Could not retrieve users data.', error });
 		});
-});
+}); // done
 
 router.get('/:id', validateUserId, (req, res) => {
 	userDb
@@ -34,11 +43,22 @@ router.get('/:id', validateUserId, (req, res) => {
 				error
 			});
 		});
-});
+}); // done
 
 router.get('/:id/posts', validateUserId, (req, res) => {
-	// do your magic!
-});
+	const { id } = req.params;
+
+	userDb
+		.getUserPosts(id)
+		.then(posts => {
+			res.status(200).json(posts);
+		})
+		.catch(error => {
+			res
+				.status(500)
+				.json({ error: "There was an error retrieving user's posts.", error });
+		});
+}); // done
 
 router.delete('/:id', validateUserId, (req, res) => {
 	// do your magic!
@@ -77,7 +97,7 @@ function validateUser(req, res, next) {
 	const body = req.body;
 	const name = req.body.name;
 
-	if (!body) {
+	if (Object.keys(body).length === 0) {
 		res.status(400).json({ error: 'Missing user data.' });
 	} else if (!name) {
 		res.status(400).json({ error: 'Missing required name field.' });
@@ -90,7 +110,7 @@ function validatePost(req, res, next) {
 	const body = req.body;
 	const text = req.body.text;
 
-	if (!body) {
+	if (Object.keys(body).length === 0) {
 		res.status(400).json({ error: 'Missing post data.' });
 	} else if (!text) {
 		res.status(400).json({ error: 'Missing required text field.' });
