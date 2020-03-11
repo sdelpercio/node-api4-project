@@ -76,11 +76,27 @@ router.delete('/:id', validateUserId, (req, res) => {
 				.status(500)
 				.json({ error: 'There was an issue deleting the user.', error });
 		});
-});
+}); // done
 
 router.put('/:id', validateUserId, validateUser, (req, res) => {
-	// do your magic!
-});
+	const userInfo = req.body;
+	const { id } = req.params;
+
+	userDb
+		.update(id, userInfo)
+		.then(count => {
+			if (count > 0) {
+				res.status(200).json({ message: 'The user has been updated' });
+			} else {
+				res.status(404).json({ message: 'The user could not be found' });
+			}
+		})
+		.catch(error => {
+			res
+				.status(500)
+				.json({ error: 'There was an issue updating the user.', error });
+		});
+}); // done
 
 //custom middleware
 function validateUserId(req, res, next) {
