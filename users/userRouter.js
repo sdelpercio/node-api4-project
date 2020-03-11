@@ -7,7 +7,7 @@ router.post('/', validateUser, (req, res) => {
 	// do your magic!
 });
 
-router.post('/:id/posts', validateUserId, validateUser, (req, res) => {
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 	// do your magic!
 });
 
@@ -30,9 +30,9 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
 });
 
 //custom middleware
-
 function validateUserId(req, res, next) {
 	const { id } = req.params;
+
 	if (!id) {
 		res.status(400).json({ error: 'Must include user ID in URL.' });
 	} else {
@@ -68,7 +68,16 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-	// do your magic!
+	const body = req.body;
+	const text = req.body.text;
+
+	if (!body) {
+		res.status(400).json({ error: 'Missing post data.' });
+	} else if (!text) {
+		res.status(400).json({ error: 'Missing required text field.' });
+	} else {
+		next();
+	}
 }
 
 module.exports = router;
